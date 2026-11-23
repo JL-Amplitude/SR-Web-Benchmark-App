@@ -15,7 +15,7 @@ export function createMetrics(root:HTMLElement, enabled:boolean) {
   const tick=(now:number)=>{
     if(!active)return;
     if(lastFrame)frames.push(now-lastFrame);lastFrame=now;
-    if(enabled && now>=nextSample){ const memory=(performance as any).memory;samples.push({atMs:now-start,heapMB:memory?memory.usedJSHeapSize/1048576:null,visibility:document.visibilityState});nextSample=now+1000; }
+    if(enabled && now>=nextSample){ const memory=(performance as any).memory;samples.push({atMs:Math.max(0,performance.now()-start),heapMB:memory?memory.usedJSHeapSize/1048576:null,visibility:document.visibilityState});nextSample=now+1000; }
     frame=requestAnimationFrame(tick);
   };
   return {

@@ -1,5 +1,5 @@
 import './style.css';
-import { DEFAULT_CONFIG, normalize, publicConfig, WORKLOADS } from './core.js';
+import { DEFAULT_CONFIG, normalize, publicConfig, redactResult, WORKLOADS } from './core.js';
 import { mountWorkload } from './workloads';
 import { createMetrics } from './metrics';
 import { initSDK, SDK_VERSIONS, type SDK } from './sdk';
@@ -78,7 +78,8 @@ async function finish(reason='stopped'){
   ];
   const uploads=sdk?.uploads??[];
   result={schemaVersion:1,appVersion:'1.0.0',runId,createdAt:new Date().toISOString(),reason,config:publicConfig(config),sdkVersions:SDK_VERSIONS,identity,environment,metrics:{...measured.metrics,actualUpdatesPerSecond:stats.updates/(measured.metrics.elapsedMs/1000),uploadBodyBytesObserved:config.telemetry?uploads.reduce((sum:number,u:any)=>sum+(u.bodyBytes??0),0):null},workload:stats,replay:{properties,uploadAttempts:config.telemetry?uploads.length:null,successfulUploads:config.telemetry?uploads.filter((u:any)=>u.status>=200&&u.status<300).length:null,playbackVerified:false},uploads,remoteConfigurations:sdk?.remoteConfigurations??[],drain:{status:drainStatus,elapsedMs:performance.now()-drainStart},samples:measured.samples,longTasks:measured.longTasks,eventTiming:measured.eventTiming,support:measured.support,history,errors:runtimeErrors,segments:previousSegments,warnings,performanceMeasures:performance.getEntriesByType('measure').map(m=>({name:m.name,duration:m.duration,startTime:m.startTime})),resources:performance.getEntriesByType('resource').map((r:any)=>({name:new URL(r.name).origin+new URL(r.name).pathname,initiatorType:r.initiatorType,duration:r.duration,transferSize:r.transferSize,encodedBodySize:r.encodedBodySize}))};
-  try{const saved=JSON.parse(localStorage.getItem('bench-results')??'[]');localStorage.setItem('bench-results',JSON.stringify([result,...saved].slice(0,12)));}catch{warnings.push('Browser storage full/unavailable. Export JSON before leaving.');}
+  result=redactResult(result,config.apiKey);
+  try{const saved=JSON.parse(localStorage.getItem('bench-results')??'[]');localStorage.setItem('bench-results',JSON.stringify([result,...saved].slice(0,12)));}catch{result.warnings.push('Browser storage full/unavailable. Export JSON before leaving.');}
   try { const channel=new BroadcastChannel('replay-bench');channel.postMessage({type:'result',result});channel.close(); }catch{}
   status.textContent=`${reason==='completed'?'Run complete':'Run stopped'} · results saved`;button('#run-export').disabled=false;
   const summary=document.querySelector<HTMLElement>('#result-summary')!;summary.hidden=false;

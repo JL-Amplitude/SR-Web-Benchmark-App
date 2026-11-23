@@ -38,6 +38,13 @@ export function products(seed, count = 24) {
 }
 export function quantile(values,p) { if (!values.length) return null; const a=[...values].sort((a,b)=>a-b), i=(a.length-1)*p, lo=Math.floor(i); return a[lo]+(a[Math.ceil(i)]-a[lo])*(i-lo); }
 export function publicConfig(config) { const {apiKey,...rest}=config; return {...rest,apiKeyProvided:Boolean(apiKey)}; }
+export function redactResult(value, apiKey) {
+  // Config endpoints put the project key in the path, not just query parameters.
+  // Clone as well as redact so live SDK upload arrays cannot mutate a saved report.
+  let serialized=JSON.stringify(value);
+  if(apiKey) for(const token of new Set([apiKey,encodeURIComponent(apiKey)])) serialized=serialized.split(token).join('[redacted]');
+  return JSON.parse(serialized);
+}
 export function compare(base, candidate) {
   const dimensions=['workload','seed','seconds','nodes','updateHz','depth','driver','telemetry'];
   const reasons=dimensions.filter(k=>base.config[k]!==candidate.config[k]).map(k=>`Different ${k}`);
