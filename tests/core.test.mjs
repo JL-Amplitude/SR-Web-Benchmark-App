@@ -1,0 +1,8 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {products,rng,normalize,publicConfig,quantile,compare,DEFAULT_CONFIG} from '../src/core.js';
+test('a seed reproduces catalog content and mutation choices',()=>{assert.deepEqual(products(42),products(42));assert.notDeepEqual(products(42),products(43));const a=rng(42),b=rng(42);for(let i=0;i<200;i++)assert.equal(a(),b());});
+test('invalid or misleading benchmark configurations are rejected',()=>{for(const input of [{seconds:0},{sampleRate:2},{nodes:501},{updateHz:NaN},{flushMin:20000,flushMax:1000},{mode:'fake'},{worker:'false'}])assert.throws(()=>normalize(input));assert.equal(normalize({seconds:'1800'}).seconds,1800);});
+test('API key never appears in exported configuration',()=>{const output=publicConfig({...DEFAULT_CONFIG,apiKey:'never-export-this'});assert.equal(output.apiKey,undefined);assert.equal(output.apiKeyProvided,true);assert.ok(!JSON.stringify(output).includes('never-export-this'));});
+test('quantiles preserve absence of measurements',()=>{assert.equal(quantile([],.95),null);assert.equal(quantile([10,20,30],.5),20);});
+test('comparisons flag mismatched workload conditions',()=>{const run={config:DEFAULT_CONFIG,environment:{userAgent:'test',viewport:{width:1400}},metrics:{elapsedMs:1000,longTaskMs:10,frameP95Ms:16,peakHeapMB:null}};const other={...run,config:{...DEFAULT_CONFIG,seed:43},metrics:{...run.metrics,longTaskMs:15}};const report=compare(run,other);assert.ok(report.warnings.includes('Different seed'));assert.equal(report.metrics.find(m=>m.key==='longTaskMs').delta,5);assert.equal(report.metrics.find(m=>m.key==='peakHeapMB').delta,null);});

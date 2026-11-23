@@ -1,0 +1,113 @@
+# Replay Bench
+
+A static, deterministic web test application for Amplitude Session Replay. Built with TypeScript and Vite; deployable under a GitHub Pages repository path. No product-data backend, remote fonts, service worker, or payment flow.
+
+## Use the hosted app
+
+1. Open the dashboard. Choose a workload and SDK mode.
+2. For SDK modes, enter a **development project** API key and choose its region. Enable Session Replay in that project's remote settings. Remote sampling/masking can override local settings.
+3. Use sample rate `1` to measure active capture. `0` measures initialized-but-not-recording behavior only if remote settings agree. The app does not fake remote configuration.
+4. Open the measured page in a separate tab, then press **Start run**. Keep its viewport and visibility consistent.
+5. Export the run JSON. Results also appear in the dashboard's browser-local Run results tab (up to 12 runs).
+6. Use exported device/session IDs to find and inspect the processed replay in Amplitude. A successful upload response is not proof of usable playback.
+
+The key stays in tab session storage; it is not included in configuration/result exports, URLs, or the repository. Closing the measured tab removes its session storage. The application starts in no-SDK mode and sends no Amplitude traffic until an SDK mode is selected. Use synthetic data only.
+
+## Modes and comparisons
+
+| Mode | Runtime | Matched comparison |
+| --- | --- | --- |
+| `none` | No Amplitude SDK loaded | Baseline for standalone |
+| `analytics` | Analytics only; autocapture/default tracking off | Baseline for plugin |
+| `standalone` | Replay standalone; two explicit HTTP API linking events | Versus `none`; report linking traffic separately |
+| `plugin` | Analytics + Replay plugin | Versus `analytics` |
+| `paired` | Analytics + standalone Replay, same explicit IDs | Versus `plugin` for integration comparison |
+
+SDK imports are dynamic. Only the chosen integration is initialized. Package versions are exact in package.json, with all transitive dependencies in package-lock.json. The plugin and standalone share the same pinned recorder dependency.
+
+## Workloads
+
+| ID | Default duration | Behavior |
+| --- | --- | --- |
+| `journey` | 60 s | Browse → search → detail → form → synthetic confirmation; repeats |
+| `large` | 30 s | Exactly 500, 2,000, or 10,000 **element descendants of #workload**, excluding the invariant root and runner UI; sparse deterministic text updates |
+| `updates` | 60 s | 120 seeded inventory rows, configurable 1–60 scheduled updates/s, two text writes per executed update |
+| `scroll` | 60 s | 200 list cards, repeated scrolling, details expansion, continuous CSS animation |
+| `complex` | 60 s | Configurable 1–200 nesting depth, 20 siblings per level, nested button and repeated input |
+| `lifecycle` | 60 s | Automated hash navigation; real focus/blur, visibility, reload/resume and explicit SDK session-change evidence |
+| `network` | 360 s | Inventory updates continue while external tools impose slow uplink, 300 s offline, reconnection |
+| `soak` | 1,800 s | Repeated typical journey; heap and timing samples throughout |
+
+Content and operation order are deterministic for a seed. Browser scheduling, actual throughput, frame timing and session IDs intentionally remain real measurements. The update scheduler does not create catch-up bursts after throttling. Compare actual updates/s, not just the configured target.
+
+The built-in journey uses scripted DOM actions (untrusted events). It is suitable for repeatable capture load, not field INP claims. Select the external driver for trusted browser clicks and typing.
+
+## Performance variants
+
+The advanced panel exposes worker compression; idle serialization and timeout; mutation merging; interaction selector timeout; memory/IndexedDB storage; minimum/maximum flush intervals; immediate/deferred initialization; focus snapshots; masking; and blocking the marked live-feed subtree.
+
+Suggested one-variable experiments:
+
+- worker on/off; idle serialization on/off; mutation merging on/off;
+- idle timeout 500/2,000/5,000 ms;
+- selector timeout unset (UI 0), 10, 50 ms;
+- flush min/max 1,000/10,000 versus 5,000/30,000 ms;
+- memory versus IndexedDB; immediate versus 2 s after window load;
+- sampling 0/0.01/0.1/1 across many new sessions.
+
+Keep the required privacy level fixed. Lower sampling changes the number of recorded sessions, not the per-session capture cost. Check remote settings and processed playback for every variant.
+
+## Results and limitations
+
+Every JSON includes public configuration, pinned versions, seed, browser/viewport, identity, duration, executed operations, mutation-record count, long tasks, frame-gap p95, available JS heap samples, Event Timing observations, lifecycle history, SDK import/init durations, replay ID evidence, upload attempts/responses, and warnings.
+
+- Workload content mounts before SDK initialization. SDK import/init and navigation LCP are separate observations. The timed workload begins with Start run. LCP is not the duration of the interaction workload.
+- Reload/resume retains identity and prior measurement segments; top-level metrics cover the final segment. Journey state restarts after reload. Compare each segment explicitly.
+- Detailed instrumentation adds its own overhead. Keep it constant or disable it and profile externally. Heap is Chromium-specific and not total process memory. Frame gaps are not an attributed dropped-frame count. Unsupported metrics should be treated as unavailable.
+- Upload measurement uses the SDK custom transport hook. It observes serialized request-body bytes (usually gzip), not HTTP/TLS wire bytes. Worker uploads are delegated through the main-thread callback, and unload delivery follows the custom-transport path. For unmodified transport performance, disable detailed instrumentation and capture network externally.
+- Upload totals cover initialization, the timed run and the drain window; attempts/retries are counted separately. Failed-attempt bytes are not successful delivered bytes. The drain window is capped at 15 seconds and its status is exported.
+- No CPU, energy, thermal, full process-memory or playback-quality claims are generated. Use external profilers and actual playback review.
+- Background tabs throttle timers and rendering; inspect visibility history. Browser online/offline state alone does not prove that a particular endpoint was reachable.
+- The comparison view shows absolute deltas from two selected runs and warns about several mismatched conditions. It does not replace statistical analysis of repeated, controlled runs.
+
+## Automate against the hosted URL
+
+Node 22.12+ and Chrome are recommended. Install dependencies with `npm ci` on the machine driving the hosted browser.
+
+```sh
+export BENCH_URL='https://jl-amplitude.github.io/SR-Web-Benchmark-App/'
+read -s AMPLITUDE_API_KEY
+export AMPLITUDE_API_KEY
+export REPETITIONS=20
+export MODES='none,standalone,analytics,plugin,paired'
+npm run benchmark
+```
+
+For a custom workload, export configuration from the dashboard and set `BENCH_CONFIG=/absolute/path/replay-bench-config.json`. Set `MODES=none` for a keyless baseline. Leave the default headed browser visible for timing work; `HEADLESS=1` is available for functional checks. `BROWSER_CHANNEL` defaults to `chrome`.
+
+For `network`, the driver enforces a 360-second run: 10 seconds at 12,500 upload bytes/s and 150 ms latency, then 300 seconds offline, then 50 seconds reconnected. This is **actual Chromium network emulation**, applied to requests rather than a fake application flag. It applies to the whole measured page. Built-in HTML keeps updating while offline. Inspect recorded phase times and uploads rather than assuming each transition occurred at an exact scheduler deadline.
+
+The driver alternates mode order on successive repetitions and uses a fresh browser context per run. It automates trusted inputs for journey/soak/complex and a tab switch for lifecycle. Manual reload/resume and new-session controls are also available in lifecycle. Keep external hardware/OS/network conditions controlled. Results go to ignored `benchmark-results/`.
+
+## Build and checks
+
+```sh
+npm ci
+npm test
+npm run build
+npm run test:browser
+```
+
+Local tests use installed Chrome; CI installs Playwright Chromium. Browser integration checks run the real Amplitude packages against mocked endpoints and do not prove live ingestion. Browser tests use shortened durations for network/soak; they do not replace the full five-minute offline or thirty-minute soak benchmark.
+
+## GitHub Pages
+
+The included workflow tests, builds, and deploys `dist/` on a push to main. Relative Vite asset URLs support `/SR-Web-Benchmark-App/`. Both `index.html` and `runner.html` are emitted. There are no server-side routes or rewrite requirements.
+
+In repository **Settings → Pages**, set **Source: GitHub Actions** if Pages has not been enabled. The workflow requests automatic enablement, but repository policy may require this one-time setting. Then rerun the workflow. No Amplitude API key is needed as a GitHub secret; it is supplied only at runtime by the person running a test.
+
+## References
+
+- [Browser SDK reference](https://www.amplitude.com/docs/sdks/session-replay/browser/reference)
+- [Browser setup and replay validation](https://amplitude.com/docs/sdks/session-replay/browser/get-started)
+- [Chrome Network size semantics](https://developer.chrome.com/docs/devtools/network/reference)
