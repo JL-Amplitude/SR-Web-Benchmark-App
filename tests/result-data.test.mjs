@@ -1,0 +1,11 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { DEFAULT_CONFIG } from '../src/core.js';
+import { parseResults,mergeRuns,metricValue,displayValue,timedPoints,runOrigin } from '../src/result-data.js';
+const run={schemaVersion:1,runId:'test-run',config:DEFAULT_CONFIG,metrics:{elapsedMs:1000,longTaskMs:0,peakHeapMB:null},replay:{},environment:{}};
+test('single and all-results exports import with optional older fields absent',()=>{assert.equal(parseResults(JSON.stringify(run))[0].runId,'test-run');assert.equal(parseResults(JSON.stringify([run,{...run,runId:'other'}])).length,2);});
+test('imports reject invalid structure and misleading numeric measurements',()=>{for(const value of [[],{},null,{...run,samples:{}},{...run,metrics:{elapsedMs:'1000'}},{...run,metrics:{elapsedMs:-1}},{...run,config:{...DEFAULT_CONFIG,mode:'invented'}}])assert.throws(()=>parseResults(JSON.stringify(value)));assert.throws(()=>parseResults('not JSON'));});
+test('merging preserves all distinct runs and updates an existing run without duplicates',()=>{const result=mergeRuns([{...run,reason:'imported'},{...run,runId:'second'}],[run,{...run,runId:'third'}]);assert.equal(result.length,3);assert.equal(result[0].reason,'imported');});
+test('missing data differs from zero and throughput is not applied to other workloads',()=>{assert.equal(metricValue(run,'longTaskMs'),0);assert.equal(metricValue(run,'peakHeapMB'),null);assert.equal(metricValue(run,'actualUpdatesPerSecond'),null);assert.equal(displayValue(null,'ms'),'Unavailable');assert.equal(displayValue(0,'ms'),'0 ms');assert.equal(metricValue({...run,config:{...DEFAULT_CONFIG,workload:'updates'},metrics:{actualUpdatesPerSecond:9.5}},'actualUpdatesPerSecond'),9.5);});
+test('chart points omit missing/nonfinite data and preserve genuine pre-run upload timing',()=>{const points=timedPoints([{atMs:500,bytes:10},{atMs:1500,bytes:0},{atMs:2000,bytes:null},{atMs:NaN,bytes:5},null],'atMs','bytes',1000);assert.deepEqual(points,[{x:-.5,y:10},{x:.5,y:0}]);});
+test('post-reload charts use the latest run-start origin',()=>{assert.equal(runOrigin({history:[{kind:'run-start',atMs:200},{kind:'reload-resume',atMs:30},{kind:'run-start',atMs:100}]}),100);assert.equal(runOrigin({}),null);});
