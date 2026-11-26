@@ -1,4 +1,4 @@
-# Replay Bench
+# SDK Performance Bench
 
 A static, deterministic web test application for Amplitude Session Replay. Built with TypeScript and Vite; deployable under a GitHub Pages repository path. No product-data backend, remote fonts, service worker, or payment flow.
 

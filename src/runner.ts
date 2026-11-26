@@ -1,3 +1,4 @@
+import { BRAND } from './brand';
 import './style.css';
 import { DEFAULT_CONFIG, normalize, publicConfig, redactResult, WORKLOADS } from './core.js';
 import { mountWorkload } from './workloads';
@@ -6,7 +7,7 @@ import { initSDK, SDK_VERSIONS, type SDK } from './sdk';
 
 declare global { interface Window { bench:any; } }
 const app=document.querySelector<HTMLElement>('#runner')!;
-app.innerHTML=`<header class="runner-bar"><a href="./" class="brand"><span class="brand-mark">r<span>•</span></span> replay bench</a><span id="run-status" role="status">Preparing workload</span><div class="runner-actions"><button id="run-start" class="primary" disabled>Start run</button><button id="run-stop" class="secondary" disabled>Stop & save</button><button id="run-export" class="secondary" disabled>Export JSON</button></div></header><div class="runner-context" id="context"></div><main id="workload" class="workload"></main><section id="result-summary" class="result-summary" hidden></section>`;
+app.innerHTML=`<header class="runner-bar"><a href="./" class="brand" aria-label="SDK Performance Bench">${BRAND}</a><span id="run-status" role="status">Preparing workload</span><div class="runner-actions"><button id="run-start" class="primary" disabled>Start run</button><button id="run-stop" class="secondary" disabled>Stop & save</button><button id="run-export" class="secondary" disabled>Export JSON</button></div></header><div class="runner-context" id="context"></div><main id="workload" class="workload"></main><section id="result-summary" class="result-summary" hidden></section>`;
 const root=document.querySelector<HTMLElement>('#workload')!,status=document.querySelector<HTMLElement>('#run-status')!;
 const button=(id:string)=>document.querySelector<HTMLButtonElement>(id)!;
 let config:any, sdk:SDK|undefined, workload:ReturnType<typeof mountWorkload>,measure:ReturnType<typeof createMetrics>,timer:any,finishTimer:any,startAt=0,active=false,result:any=null,ready=false,initializing=false;
