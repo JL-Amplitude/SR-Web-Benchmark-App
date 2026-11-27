@@ -3,7 +3,7 @@ test('configuration menus use styled options and update native form values',asyn
   await page.goto('/');
   const mode=page.getByRole('combobox',{name:'SDK mode',exact:true});
   await mode.click();await expect(page.getByRole('listbox',{name:'SDK mode options'})).toBeVisible();
-  await page.screenshot({path:testInfo.outputPath('dropdown-desktop.png')});
+  await page.screenshot({path:testInfo.outputPath('dropdown-desktop.png'),animations:'disabled'});
   await page.getByRole('option',{name:'Analytics only',exact:true}).click();
   await expect(page.locator('select[name=mode]')).toHaveValue('analytics');await expect(mode).toContainText('Analytics only');
   await expect(page.locator('#mode-note')).toContainText('Analytics SDK only');await expect(mode).toBeFocused();
@@ -24,7 +24,7 @@ test('disabled dynamic selectors and mobile option menus fit the viewport',async
   await page.locator('[data-tab=workloads]').click();await page.setViewportSize({width:390,height:844});
   const mode=page.getByRole('combobox',{name:'SDK mode',exact:true});await mode.click();await expect(page.getByRole('listbox')).toBeVisible();
   const rect=await page.getByRole('listbox').boundingBox();expect(rect.x).toBeGreaterThanOrEqual(0);expect(rect.x+rect.width).toBeLessThanOrEqual(390);expect(rect.y).toBeGreaterThanOrEqual(0);expect(rect.y+rect.height).toBeLessThanOrEqual(844);
-  await page.screenshot({path:testInfo.outputPath('dropdown-mobile.png')});
+  await page.screenshot({path:testInfo.outputPath('dropdown-mobile.png'),animations:'disabled'});
   await page.getByRole('option',{name:'Session Replay · standalone',exact:true}).click();await expect(mode).toContainText('Session Replay · standalone');
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
 });
