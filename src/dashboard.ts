@@ -1,3 +1,4 @@
+import { installSelects } from './selects';
 import { BRAND } from './brand';
 import './style.css';
 import './explorer.css';
@@ -69,3 +70,5 @@ function followHash(){const hash=location.hash.slice(1);if(hash.startsWith('visu
 window.addEventListener('hashchange',followHash);
 try{const saved=localStorage.getItem('bench-last-config');apply(saved?normalize(JSON.parse(saved)):DEFAULT_CONFIG);}catch{apply(DEFAULT_CONFIG);}renderResults();
 explorer.refresh();followHash();
+
+installSelects(document.querySelector<HTMLElement>('#app')!);
