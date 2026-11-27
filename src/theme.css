@@ -1,0 +1,36 @@
+/* Official source: https://brand.amplitude.com/creative/color (2026-11-27).
+   Brand swatches below are exact. Semantic tints/shadows are derived from them. */
+:root{
+  --amp-blue:#0052F2;
+  --amp-black:#000000;
+  --amp-white:#FFFFFF;
+  --amp-dark-blue:#001A4F;
+  --amp-lilac:#6980FF;
+  --amp-violet:#A373FF;
+  --amp-pink:#FF7D78;
+  --amp-red:#F23845;
+  --amp-gray-100:#13171A;
+  --amp-gray-90:#242A2E;
+  --amp-gray-80:#373D42;
+  --amp-gray-70:#50565B;
+  --amp-gray-60:#697077;
+  --amp-gray-50:#868D95;
+  --amp-gray-40:#9FA5AD;
+  --amp-gray-30:#B9BFC7;
+  --amp-gray-20:#D5D9E0;
+  --amp-gray-10:#F2F4F8;
+  --color-blue-soft:color-mix(in srgb,var(--amp-blue) 6%,var(--amp-white));
+  --color-blue-hover:color-mix(in srgb,var(--amp-blue) 10%,var(--amp-white));
+  --color-blue-border:color-mix(in srgb,var(--amp-blue) 35%,var(--amp-white));
+  --color-lilac-soft:color-mix(in srgb,var(--amp-lilac) 12%,var(--amp-white));
+  --color-violet-soft:color-mix(in srgb,var(--amp-violet) 10%,var(--amp-white));
+  --color-sidebar-hover:color-mix(in srgb,var(--amp-blue) 28%,var(--amp-dark-blue));
+  --color-chart-muted:color-mix(in srgb,var(--amp-blue) 65%,var(--amp-white));
+  --color-error-surface:color-mix(in srgb,var(--amp-red) 6%,var(--amp-white));
+  --color-error-text:color-mix(in srgb,var(--amp-red) 70%,var(--amp-black));
+  --color-focus-ring:color-mix(in srgb,var(--amp-blue) 20%,transparent);
+  --color-shadow-small:color-mix(in srgb,var(--amp-dark-blue) 4%,transparent);
+  --color-shadow-soft:color-mix(in srgb,var(--amp-dark-blue) 8%,transparent);
+  --color-shadow-popover:color-mix(in srgb,var(--amp-dark-blue) 14%,transparent);
+  --color-shadow-strong:color-mix(in srgb,var(--amp-dark-blue) 20%,transparent);
+}

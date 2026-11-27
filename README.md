@@ -2,6 +2,10 @@
 
 A static, deterministic web test application for Amplitude Session Replay. Built with TypeScript and Vite; deployable under a GitHub Pages repository path. No product-data backend, remote fonts, service worker, or payment flow.
 
+## Color palette
+
+Colors are centralized in `src/theme.css`, using the [official Amplitude color guide](https://brand.amplitude.com/creative/color). Amplitude Blue (`#0052F2`), white, black, Dark Blue (`#001A4F`), and the official cool-gray scale lead the interface. Lilac and violet are limited to small decorative accents; red is reserved for errors. Charts use blue tones. Soft surfaces, focus rings, and shadows are explicitly derived from the brand swatches, rather than presented as additional official colors.
+
 ## Use the hosted app
 
 1. Open the dashboard. Choose a workload and SDK mode.
