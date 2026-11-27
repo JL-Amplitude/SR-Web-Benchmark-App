@@ -7,7 +7,7 @@ import { initSDK, SDK_VERSIONS, type SDK } from './sdk';
 
 declare global { interface Window { bench:any; } }
 const app=document.querySelector<HTMLElement>('#runner')!;
-app.innerHTML=`<header class="runner-bar"><a href="./" class="brand" aria-label="SDK Performance Bench">${BRAND}</a><span id="run-status" role="status">Preparing workload</span><div class="runner-actions"><button id="run-start" class="primary" disabled>Start run</button><button id="run-stop" class="secondary" disabled>Stop & save</button><button id="run-export" class="secondary" disabled>Export JSON</button></div></header><div class="runner-context" id="context"></div><main id="workload" class="workload"></main><section id="result-summary" class="result-summary" hidden></section>`;
+app.innerHTML=`<header class="runner-bar"><a href="./" class="brand" aria-label="Amplitude SDK Performance Bench">${BRAND}</a><span id="run-status" role="status">Preparing workload</span><div class="runner-actions"><button id="run-start" class="primary" disabled>Start run</button><button id="run-stop" class="secondary" disabled>Stop & save</button><button id="run-export" class="secondary" disabled>Export JSON</button></div></header><div class="runner-context" id="context"></div><main id="workload" class="workload"></main><section id="result-summary" class="result-summary" hidden></section>`;
 const root=document.querySelector<HTMLElement>('#workload')!,status=document.querySelector<HTMLElement>('#run-status')!;
 const button=(id:string)=>document.querySelector<HTMLButtonElement>(id)!;
 let config:any, sdk:SDK|undefined, workload:ReturnType<typeof mountWorkload>,measure:ReturnType<typeof createMetrics>,timer:any,finishTimer:any,startAt=0,active=false,result:any=null,ready=false,initializing=false;
@@ -87,7 +87,7 @@ async function finish(reason='stopped'){
   summary.textContent=`${(result.metrics.elapsedMs/1000).toFixed(1)}s measured · ${stats.ticks} workload ticks · ${result.replay.successfulUploads??'Unobserved'} successful Replay upload responses. Playback is not yet verified. Export the result, then verify its identity in Amplitude.`;
   return result;
 }
-button('#run-start').addEventListener('click',start);button('#run-stop').addEventListener('click',()=>void finish());button('#run-export').addEventListener('click',()=>download(result,`replay-bench-${runId}.json`));
+button('#run-start').addEventListener('click',start);button('#run-stop').addEventListener('click',()=>void finish());button('#run-export').addEventListener('click',()=>download(result,`amplitude-sdk-performance-bench-${runId}.json`));
 for(const kind of ['visibilitychange','focus','blur','online','offline','pageshow','pagehide','hashchange'])window.addEventListener(kind,()=>note(kind,{online:navigator.onLine,hash:location.hash}));
 window.bench={get ready(){return ready;},get config(){return config?publicConfig(config):null;},get running(){return active;},get result(){return result;},get state(){return workload?.stats();},get replayProperties(){return sdk?.properties()??{};},start,stop:finish,newSession:()=>sdk?.newSession(),checkpoint,networkPhase:(phase:string)=>note('external-network-phase',{phase}),note};
 void initialize();

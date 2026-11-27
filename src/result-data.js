@@ -25,7 +25,7 @@ export function displayValue(value,unit=''){
   return `${number}${unit===' /s'||unit==='/s'?' /s':unit?' '+unit:''}`;
 }
 export function validateResult(run){
-  if(!run || Array.isArray(run) || run.schemaVersion!==1 || typeof run.runId!=='string'||!run.runId.trim())throw new Error('Expected a Replay Bench result with schemaVersion 1 and a run ID.');
+  if(!run || Array.isArray(run) || run.schemaVersion!==1 || typeof run.runId!=='string'||!run.runId.trim())throw new Error('Expected a Amplitude SDK Performance Bench result with schemaVersion 1 and a run ID.');
   for(const key of ['config','metrics','replay','environment'])if(!run[key]||typeof run[key]!=='object'||Array.isArray(run[key]))throw new Error(`Run ${run.runId}: missing or invalid ${key}.`);
   normalize({...run.config,apiKey:''});
   for(const {key}of METRICS)if(run.metrics[key]!=null && (!finite(run.metrics[key])||run.metrics[key]<0))throw new Error(`Run ${run.runId}: ${key} must be a non-negative number or null.`);

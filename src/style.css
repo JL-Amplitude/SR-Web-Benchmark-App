@@ -6,7 +6,7 @@
 @media(max-width:750px){.workspace-grid{grid-template-columns:1fr}.config-panel{order:-1}.config-panel form{display:grid;grid-template-columns:1fr 1fr;gap:0 20px}.config-heading h2{margin-bottom:18px}.mode-note,.advanced,.launch,.launch-note,#config-error,#import-config,.form-divider{grid-column:1/-1}.key-field{grid-column:1/-1}.form-divider{margin:0 0 18px}.advanced-body{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}.advanced-body>small{grid-column:1/-1}.overview-strip{grid-template-columns:1fr;gap:15px}.overview-strip>div{border-left:0;padding-left:0}.overview-strip b{font-size:.8rem}.overview-strip small{font-size:.7rem}.strip-icon{display:grid;width:32px;height:32px;font-size:1.1rem}.section-title>span{font-size:.7rem}.workload-card p{min-height:63px}.guide-grid{grid-template-columns:1fr}.local-badge{display:none}.page-footer{padding:20px 25px}.page-footer>span:first-child{display:none}.runner-bar{padding:15px;gap:12px}.runner-bar .brand{display:none}.runner-context{padding:12px 15px;font-size:.65rem}.runner-actions{flex-wrap:wrap}.runner-actions button{font-size:.75rem;padding:9px 12px}.workload{padding:25px 20px}.catalog{grid-template-columns:repeat(2,1fr)}.product-art{min-height:160px}.store-header>span:last-child{display:none}.store-hero h1{font-size:3.2rem}.detail{grid-template-columns:1fr;gap:35px}.detail>.product-art{height:250px}.node-grid{grid-template-columns:repeat(4,1fr)}.market-row{grid-template-columns:1fr 2fr 1fr;padding:12px 10px;font-size:.65rem;gap:8px}.market-row>span:last-child{display:none}.scroll-card{padding:15px;gap:15px}.market-heading{align-items:flex-start}.market-heading p{max-width:100px}.market-heading h1{font-size:1.6rem}}
 @media(max-width:450px){.sidebar{width:58px;padding:22px 8px}.dashboard{margin-left:58px}.nav-item{padding:13px 10px}.page{padding:25px 16px}.topbar{height:65px;padding:0 16px;font-size:.7rem}.slash{margin:0 6px}.page-heading h1{font-size:1.8rem}.page-heading p{font-size:.8rem}.workload-grid{grid-template-columns:1fr}.workload-card p{min-height:0}.config-panel form{display:block}.advanced-body{display:block}.form-row{gap:10px}.page-footer{padding:20px 16px}.page-footer span:last-child{display:none}.product-art{min-height:135px}}
 
-/* SDK Performance Bench: code brackets and a rising performance trace. */
+/* Amplitude SDK Performance Bench: code brackets and a rising performance trace. */
 .brand-mark{width:36px;height:36px;flex-shrink:0;background:var(--amp-blue);border-radius:10px;box-shadow:inset 0 1px 0 color-mix(in srgb,var(--amp-white) 15%,transparent)}
 .brand-mark svg{display:block;width:29px;height:29px}
 .brand-wordmark{display:flex;flex-direction:column;gap:3px;line-height:1.15;letter-spacing:0}
@@ -19,3 +19,6 @@
 .runner-bar .brand-kicker{font-size:.75rem}
 .runner-bar .brand-name{font-size:.8125rem}
 @media(max-width:950px){.sidebar .brand-wordmark{display:none}.sidebar .brand{margin-left:auto;margin-right:auto}}
+
+/* Fit the complete product name beside the existing logo icon. */
+.brand-kicker{font-size:.8125rem;letter-spacing:.035em}.runner-bar .brand-kicker{font-size:.75rem;letter-spacing:.025em}

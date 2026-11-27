@@ -1,5 +1,5 @@
 {
-  "name": "replay-bench",
+  "name": "amplitude-sdk-performance-bench",
   "version": "1.0.0",
   "private": true,
   "type": "module",

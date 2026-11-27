@@ -1,4 +1,4 @@
-# SDK Performance Bench
+# Amplitude SDK Performance Bench
 
 A static, deterministic web test application for Amplitude Session Replay. Built with TypeScript and Vite; deployable under a GitHub Pages repository path. No product-data backend, remote fonts, service worker, or payment flow.
 
@@ -97,7 +97,7 @@ export MODES='none,standalone,analytics,plugin,paired'
 npm run benchmark
 ```
 
-For a custom workload, export configuration from the dashboard and set `BENCH_CONFIG=/absolute/path/replay-bench-config.json`. Set `MODES=none` for a keyless baseline. Leave the default headed browser visible for timing work; `HEADLESS=1` is available for functional checks. `BROWSER_CHANNEL` defaults to `chrome`.
+For a custom workload, export configuration from the dashboard and set `BENCH_CONFIG=/absolute/path/amplitude-sdk-performance-bench-config.json`. Set `MODES=none` for a keyless baseline. Leave the default headed browser visible for timing work; `HEADLESS=1` is available for functional checks. `BROWSER_CHANNEL` defaults to `chrome`.
 
 For `network`, the driver enforces a 360-second run: 10 seconds at 12,500 upload bytes/s and 150 ms latency, then 300 seconds offline, then 50 seconds reconnected. This is **actual Chromium network emulation**, applied to requests rather than a fake application flag. It applies to the whole measured page. Built-in HTML keeps updating while offline. Inspect recorded phase times and uploads rather than assuming each transition occurred at an exact scheduler deadline.
 
